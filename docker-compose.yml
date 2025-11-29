@@ -1,34 +1,40 @@
-version: '3.8'
-
 services:
-  mongo:
+  mongodb:
     image: mongo:latest
     container_name: mongodb
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: <username>
-      MONGO_INITDB_ROOT_PASSWORD: <password>
+    ports:
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      -mean-network
 
   backend:
     image: rohithracharla/mean-backend:latest
-    container_name: backend-api
-    restart: always
+    container_name: backend
+    restart: unless-stopped
     depends_on:
       - mongo
     environment:
-      DB_CONNECTION_STRING: mongodb://admin:password123@mongo:27017/dd_db?authSource=admin
-      PORT: 3000
+      MONGODB_URL: mongodb://mongodb:27017/dd_db
+      PORT: 8080
+    networks:
+      -mean-network
 
   frontend:
     image: rohithracharla/mean-frontend:latest
-    container_name: frontend-ui
-    restart: always
-
-  nginx-proxy:
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      -backend
+    network:
+      -mean-network
+      
+  nginx:
     image: nginx:alpine
-    container_name: gateway
+    container_name: nginx-proxy
     restart: always
     ports:
       - "80:80"
@@ -37,6 +43,12 @@ services:
     depends_on:
       - frontend
       - backend
+    network:
+      -mean-network
 
 volumes:
   mongo-data:
+  
+networks:
+  mean-network:
+    driver: bridge
