@@ -5,6 +5,7 @@ Prerequisites:
 2. Docker Engine, Docker Compose, and Docker Hub account for image registry
 3. Jenkins for automated deploymend (CI/CD)
 
+```
 Project structure:
 
    dd-project/
@@ -36,3 +37,4 @@ Project structure:
         └── app/
             ├── services/
             └── components/
+```
