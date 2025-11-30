@@ -7,19 +7,19 @@ services:
     volumes:
       - mongo-data:/data/db
     networks:
-      -mean-network
+      - mean-network
 
   backend:
     image: rohithracharla/mean-backend:latest
     container_name: backend
     restart: unless-stopped
     depends_on:
-      - mongo
+      - mongodb
     environment:
-      MONGODB_URL: mongodb://mongodb:27017/dd_db
-      PORT: 8080
+      - MONGODB_URL: mongodb://mongodb:27017/dd_db
+      - PORT: 8080
     networks:
-      -mean-network
+      - mean-network
 
   frontend:
     image: rohithracharla/mean-frontend:latest
@@ -28,9 +28,9 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      -backend
-    network:
-      -mean-network
+      - backend
+    networks:
+      - mean-network
       
   nginx:
     image: nginx:alpine
@@ -39,12 +39,12 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx-proxy.conf:ro
     depends_on:
       - frontend
       - backend
-    network:
-      -mean-network
+    networks:
+      - mean-network
 
 volumes:
   mongo-data:
